@@ -1,0 +1,6 @@
+{
+  "name": "AB Graphics",
+  "description": "Premium graphic design agency website with AI assistant, interactive portfolio, services list, and quote generator.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
