@@ -1,0 +1,68 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Global Safety Net default-deny catch-all
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    // Common Global Helpers
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isOwner() {
+      return isSignedIn() && 
+             request.auth.token.email == "rajvaidyaadhwaryu247@gmail.com" && 
+             request.auth.token.email_verified == true;
+    }
+
+    function isValidId(id) {
+      return id is string && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$');
+    }
+
+    function incoming() {
+      return request.resource.data;
+    }
+
+    // Entity-specific validators to prevent Resource Poisoning or "Denial of Wallet" size attacks
+    function isValidSettings(data) {
+      return data.logoUrl is string && data.logoUrl.size() <= 2048 &&
+             data.heroTitle is string && data.heroTitle.size() <= 400 &&
+             data.contactNumber is string && data.contactNumber.size() <= 30 &&
+             data.whatsappNumber is string && data.whatsappNumber.size() <= 30;
+    }
+
+    function isValidPortfolioItem(data) {
+      return data.title is string && data.title.size() <= 200 &&
+             data.category is string && data.category.size() <= 100 &&
+             data.imageUrl is string && data.imageUrl.size() <= 2048;
+    }
+
+    function isValidReel(data) {
+      return data.reelTitle is string && data.reelTitle.size() <= 200 &&
+             data.instagramReelUrl is string && data.instagramReelUrl.size() <= 2048 &&
+             data.thumbnailUrl is string && data.thumbnailUrl.size() <= 2048;
+    }
+
+    // Matching Collections and applying rigorous rules
+    match /settings/{settingId} {
+      allow read: if true;
+      allow create, update: if isOwner() && isValidId(settingId) && isValidSettings(incoming());
+      allow delete: if isOwner() && isValidId(settingId);
+    }
+
+    match /Portfolio/{portfolioId} {
+      allow read: if true;
+      allow create, update: if isOwner() && isValidId(portfolioId) && isValidPortfolioItem(incoming());
+      allow delete: if isOwner() && isValidId(portfolioId);
+    }
+
+    match /Reels/{reelId} {
+      allow read: if true;
+      allow create, update: if isOwner() && isValidId(reelId) && isValidReel(incoming());
+      allow delete: if isOwner() && isValidId(reelId);
+    }
+  }
+}

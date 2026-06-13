@@ -8,11 +8,57 @@ import { Portfolio } from "./components/Portfolio";
 import { QuoteCalculator } from "./components/QuoteCalculator";
 import { Contact } from "./components/Contact";
 import { Chatbot } from "./components/Chatbot";
+import { AdminPanel } from "./components/AdminPanel";
+import { ReelsShowcase } from "./components/ReelsShowcase";
+import { db, auth, handleFirestoreError, OperationType } from "./firebase";
+import { doc, getDoc } from "firebase/firestore";
+import { onAuthStateChanged } from "firebase/auth";
 import { Phone, MessageSquare, Heart, Sparkles, Check, CheckCircle2, ChevronRight, Menu, X, ArrowUpRight } from "lucide-react";
 
 export default function App() {
   const [selectedService, setSelectedService] = useState<string>("");
   const [toastMessage, setToastMessage] = useState<string | null>(null);
+
+  // Dynamic values loaded from Firebase
+  const [logoSrc, setLogoSrc] = useState<string>("/assets/ab-graphics-logo.png");
+  const [heroTitle, setHeroTitle] = useState<string>("");
+  const [contactNumber, setContactNumber] = useState<string>("9307643461");
+  const [whatsappNumber, setWhatsappNumber] = useState<string>("919307643461");
+  
+  // Admin Login and Modals
+  const [isAdminLoggedIn, setIsAdminLoggedIn] = useState<boolean>(false);
+  const [isAdminPanelOpen, setIsAdminPanelOpen] = useState<boolean>(false);
+  const [itemsChangeTrigger, setItemsChangeTrigger] = useState<number>(0);
+
+  useEffect(() => {
+    const fetchSettings = async () => {
+      const path = "settings/website";
+      try {
+        const settingsSnap = await getDoc(doc(db, "settings", "website"));
+        if (settingsSnap.exists()) {
+          const data = settingsSnap.data();
+          if (data.logoUrl) setLogoSrc(data.logoUrl);
+          if (data.heroTitle) setHeroTitle(data.heroTitle);
+          if (data.contactNumber) setContactNumber(data.contactNumber);
+          if (data.whatsappNumber) setWhatsappNumber(data.whatsappNumber);
+        }
+      } catch (err) {
+        handleFirestoreError(err, OperationType.GET, path);
+      }
+    };
+    fetchSettings();
+  }, [itemsChangeTrigger]);
+
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (usr) => {
+      if (usr && usr.email === "rajvaidyaadhwaryu247@gmail.com") {
+        setIsAdminLoggedIn(true);
+      } else {
+        setIsAdminLoggedIn(false);
+      }
+    });
+    return () => unsubscribe();
+  }, []);
 
   const displayToast = (msg: string) => {
     setToastMessage(msg);
@@ -47,14 +93,14 @@ export default function App() {
     }
   };
 
-  const whatsappUrl = "https://wa.me/919307643461?text=Hi%20Adhwaryu,%20I'm%20writing%20from%20your%20AB%20Graphics%20website%20and%20want%20to%20discuss%20design%20options!";
+  const whatsappUrl = `https://wa.me/${whatsappNumber}?text=Hi%20Adhwaryu,%20I'm%20writing%20from%20your%20AB%20Graphics%20website%20and%20want%2520to%2520discuss%2520design%2520options!`;
 
   return (
     <div className="bg-[#0a0a0c] min-h-screen text-gray-100 font-sans selection:bg-orange-500 selection:text-white">
       
       {/* Top Banner alert on mobile */}
-      <div className="fixed top-0 left-0 right-0 z-50 bg-gradient-to-r from-blue-700 via-purple-700 to-orange-600 px-4 py-1.5 text-center text-[10px] sm:text-xs font-mono font-black uppercase tracking-wider block md:hidden select-none">
-        Call Adhwaryu Direct: <a href="tel:9307643461" className="underline text-white">9307643461</a> • WhatsApp Enabled
+      <div className="fixed top-0 left-0 right-0 z-50 bg-gradient-to-r from-blue-700 via-purple-700 to-orange-600 px-4 py-1.5 text-center text-[10px] sm:text-xs font-mono font-black uppercase tracking-wider block md:hidden select-none animate-pulse">
+        Call Adhwaryu Direct: <a href={`tel:${contactNumber}`} className="underline text-white">{contactNumber}</a> • WhatsApp Active
       </div>
 
       {/* Global Success Notification Toast */}
@@ -80,6 +126,8 @@ export default function App() {
 
       {/* Header Menu */}
       <Navbar
+        logoSrc={logoSrc}
+        contactNumber={contactNumber}
         onQuoteClick={() => scrollToSection("quote-estimator-section")}
         onChatClick={() => {
           // Trigger chatbot floating click
@@ -88,11 +136,16 @@ export default function App() {
             (chatBtn as HTMLButtonElement).click();
           }
         }}
+        onAdminClick={() => setIsAdminPanelOpen(true)}
+        isAdminLoggedIn={isAdminLoggedIn}
       />
 
       {/* Hero Header */}
       <Hero
-        logoSrc="/assets/ab-graphics-logo.png"
+        logoSrc={logoSrc}
+        heroTitle={heroTitle}
+        contactNumber={contactNumber}
+        whatsappNumber={whatsappNumber}
         onQuoteClick={() => scrollToSection("quote-estimator-section")}
         onChatClick={() => {
           displayToast("Launching automated AB assistant consultant balloon on the bottom-right corner!");
@@ -109,7 +162,10 @@ export default function App() {
       <Packages onPackageSelect={selectPackageAndScroll} />
 
       {/* Portfolio Section */}
-      <Portfolio />
+      <Portfolio itemsChangeTrigger={itemsChangeTrigger} />
+
+      {/* Dynamic Instagram Reels section */}
+      <ReelsShowcase itemsChangeTrigger={itemsChangeTrigger} />
 
       {/* Quote Planner Interactive Widget Section */}
       <section id="quote-estimator-section" className="py-20 sm:py-24 bg-[#0a0a0c] relative overflow-hidden border-t border-white/10">
@@ -134,12 +190,21 @@ export default function App() {
       <Contact
         prefilledRequirement={selectedService}
         onSuccess={displayToast}
+        contactNumber={contactNumber}
+        whatsappNumber={whatsappNumber}
       />
 
       {/* Floating Chatbot Tool */}
       <Chatbot />
 
-      {/* Permanent floating WhatsApp button requested linked to 9307643461 */}
+      {/* Secure Admin Settings Overlay */}
+      <AdminPanel
+        isOpen={isAdminPanelOpen}
+        onClose={() => setIsAdminPanelOpen(false)}
+        onSettingsUpdate={() => setItemsChangeTrigger(prev => prev + 1)}
+      />
+
+      {/* Permanent floating WhatsApp button requested linked to contact support */}
       <div className="fixed bottom-6 left-6 z-50 group">
         <div className="absolute -inset-1 rounded-full bg-green-500/40 blur-md opacity-75 group-hover:opacity-100 transition-opacity"></div>
         <a
@@ -150,8 +215,8 @@ export default function App() {
           title="Direct WhatsApp link"
         >
           <MessageSquare className="w-5 h-5 fill-white" />
-          <span className="absolute left-[115%] bg-slate-900 border border-white/10 text-white font-mono text-[9px] px-2.5 py-1 rounded-lg uppercase tracking-wider whitespace-nowrap shadow-xl opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none">
-            Chat Adhwaryu on WhatsApp
+          <span className="absolute left-[115%] bg-slate-900 border border-white/10 text-white font-mono text-[9px] px-2.5 py-1 rounded-lg uppercase tracking-wider whitespace-nowrap shadow-xl opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none font-bold">
+            Chat Adhwaryu: +{whatsappNumber}
           </span>
         </a>
       </div>
@@ -165,7 +230,7 @@ export default function App() {
             <div className="md:col-span-2">
               <div className="flex items-center gap-2 mb-4">
                 <img
-                  src="/assets/ab-graphics-logo.png"
+                  src={logoSrc}
                   alt="AB Graphics"
                   className="w-10 h-10 rounded-lg object-contain shadow-lg border border-white/10 pointer-events-none"
                   referrerPolicy="no-referrer"
@@ -205,14 +270,14 @@ export default function App() {
               <ul className="text-gray-400 text-xs flex flex-col gap-2 font-sans">
                 <li>
                   Phone:{" "}
-                  <a href="tel:9307643461" className="text-white font-mono hover:underline">
-                    9307643461
+                  <a href={`tel:${contactNumber}`} className="text-white font-mono hover:underline">
+                    {contactNumber}
                   </a>
                 </li>
                 <li>
                   WhatsApp:{" "}
                   <a href={whatsappUrl} target="_blank" rel="noopener noreferrer" className="text-green-400 font-mono hover:underline">
-                    9307643461
+                    {contactNumber}
                   </a>
                 </li>
                 <li>
@@ -230,7 +295,7 @@ export default function App() {
               © {new Date().getFullYear()} AB Graphics. Crafted for elite digital impact.
             </div>
             <div>
-              Founder Lead: <span className="text-gray-400">Adhwaryu Rajvaidya (9307643461)</span>
+              Founder Lead: <span className="text-gray-400">Adhwaryu Rajvaidya ({contactNumber})</span>
             </div>
           </div>
         </div>

@@ -5,10 +5,20 @@ interface HeroProps {
   onQuoteClick: () => void;
   onChatClick: () => void;
   logoSrc: string;
+  heroTitle?: string;
+  contactNumber?: string;
+  whatsappNumber?: string;
 }
 
-export const Hero: React.FC<HeroProps> = ({ onQuoteClick, onChatClick, logoSrc }) => {
-  const whatsappUrl = "https://wa.me/919307643461?text=Hi%20Adhwaryu,%20I%20visited%20your%20AB%20Graphics%20website%20and%20want%20to%20get%20started%20on%20a%20project!";
+export const Hero: React.FC<HeroProps> = ({ 
+  onQuoteClick, 
+  onChatClick, 
+  logoSrc,
+  heroTitle = "",
+  contactNumber = "9307643461",
+  whatsappNumber = "919307643461"
+}) => {
+  const whatsappUrl = `https://wa.me/${whatsappNumber}?text=Hi%20Adhwaryu,%20I%20visited%20your%20AB%20Graphics%20website%20and%20want%2520to%2520get%2520started%2520on%2520a%2520project!`;
 
   return (
     <section id="home" className="relative min-h-screen pt-28 sm:pt-36 pb-16 flex flex-col items-center justify-center overflow-hidden bg-[#0a0a0c]">
@@ -44,8 +54,16 @@ export const Hero: React.FC<HeroProps> = ({ onQuoteClick, onChatClick, logoSrc }
 
         {/* Main Heading requested exactly */}
         <h1 className="text-4xl sm:text-6xl md:text-7xl font-display font-extrabold tracking-tight text-white max-w-4xl leading-[1.1] mb-6">
-          Designing Ideas,<br />
-          <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 via-purple-400 to-orange-400 animate-pulse">Creating Impact</span>
+          {heroTitle ? (
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-white via-orange-100 to-orange-400 leading-normal block">
+              {heroTitle}
+            </span>
+          ) : (
+            <>
+              Designing Ideas,<br />
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 via-purple-400 to-orange-400 animate-pulse">Creating Impact</span>
+            </>
+          )}
         </h1>
 
         {/* Subheading requested exactly */}
@@ -71,11 +89,11 @@ export const Hero: React.FC<HeroProps> = ({ onQuoteClick, onChatClick, logoSrc }
             Get a Quote <ArrowUpRight className="w-4 h-4 text-orange-200" />
           </button>
           <a
-            href="tel:9307643461"
+            href={`tel:${contactNumber}`}
             className="flex items-center justify-center gap-2 px-6 py-4 rounded-xl bg-white/5 hover:bg-white/10 border border-white/20 text-white font-display font-bold text-sm tracking-wide hover:scale-103 active:scale-98 transition-all"
           >
             <Phone className="w-4 h-4 text-orange-400" />
-            9307643461
+            {contactNumber}
           </a>
         </div>
 

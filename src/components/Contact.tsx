@@ -5,9 +5,16 @@ import { InquiryForm } from "../types";
 interface ContactProps {
   prefilledRequirement?: string;
   onSuccess: (message: string) => void;
+  contactNumber?: string;
+  whatsappNumber?: string;
 }
 
-export const Contact: React.FC<ContactProps> = ({ prefilledRequirement = "", onSuccess }) => {
+export const Contact: React.FC<ContactProps> = ({ 
+  prefilledRequirement = "", 
+  onSuccess,
+  contactNumber = "9307643461",
+  whatsappNumber = "919307643461"
+}) => {
   const [name, setName] = useState("");
   const [mobile, setMobile] = useState("");
   const [requirement, setRequirement] = useState("");
@@ -24,7 +31,7 @@ export const Contact: React.FC<ContactProps> = ({ prefilledRequirement = "", onS
     }
   }, [prefilledRequirement]);
 
-  const whatsappUrl = "https://wa.me/919307643461?text=Hi%20Adhwaryu,%20I%20want%20to%20place%20an%20order%20for%20your%20design%20services!";
+  const whatsappUrl = `https://wa.me/${whatsappNumber}?text=Hi%20Adhwaryu,%20I%20want%2520to%2520place%2520an%2520order%2520for%2520your%252520design%252520services!`;
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -99,7 +106,7 @@ export const Contact: React.FC<ContactProps> = ({ prefilledRequirement = "", onS
 *Service / Package:* ${requirement}
 *Description/Message:* ${message || "Not specified"}`;
 
-        const dynamicWhatsappUrl = `https://wa.me/919307643461?text=${encodeURIComponent(formattedWhatsappText)}`;
+        const dynamicWhatsappUrl = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(formattedWhatsappText)}`;
         
         setWhatsappBackupUrl(dynamicWhatsappUrl);
         setSuccess(true);
@@ -155,7 +162,7 @@ export const Contact: React.FC<ContactProps> = ({ prefilledRequirement = "", onS
             <div className="flex flex-col gap-5 my-8">
               {/* Phone item click direct */}
               <a
-                href="tel:9307643461"
+                href={`tel:${contactNumber}`}
                 className="flex items-center gap-4 p-4 rounded-xl bg-white/5 border border-white/10 hover:border-orange-500/30 transition-colors"
               >
                 <div className="w-10 h-10 rounded-lg bg-orange-500/10 flex items-center justify-center text-orange-400">
@@ -164,7 +171,7 @@ export const Contact: React.FC<ContactProps> = ({ prefilledRequirement = "", onS
                 <div>
                   <span className="block text-[9px] font-mono text-gray-400 uppercase">DIRECT PHONE LINE</span>
                   <span className="text-white font-display font-black text-base hover:text-orange-400 transition-colors">
-                    9307643461
+                    {contactNumber}
                   </span>
                 </div>
               </a>
@@ -182,7 +189,7 @@ export const Contact: React.FC<ContactProps> = ({ prefilledRequirement = "", onS
                 <div>
                   <span className="block text-[9px] font-mono text-gray-400 uppercase">WHATSAPP AGENT CHAT</span>
                   <span className="text-white font-display font-black text-base hover:text-green-400 transition-colors">
-                    +91 9307643461
+                    +{whatsappNumber}
                   </span>
                 </div>
               </a>

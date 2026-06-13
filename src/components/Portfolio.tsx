@@ -1,13 +1,20 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Search, Eye, X, MessageSquare, ZoomIn, Film, Sparkles } from "lucide-react";
 import { PortfolioItem } from "../types";
+import { db, handleFirestoreError, OperationType } from "../firebase";
+import { collection, getDocs } from "firebase/firestore";
 
-export const Portfolio: React.FC = () => {
+interface PortfolioProps {
+  itemsChangeTrigger?: number;
+}
+
+export const Portfolio: React.FC<PortfolioProps> = ({ itemsChangeTrigger = 0 }) => {
   const [selectedCategory, setSelectedCategory] = useState<string>("All");
   const [activeItem, setActiveItem] = useState<PortfolioItem | null>(null);
+  const [dynamicItems, setDynamicItems] = useState<PortfolioItem[]>([]);
 
-  // Dedicated generated image assets with timestamp matching
-  const portfolioItems: PortfolioItem[] = [
+  // Curated static image assets with timestamp matching
+  const staticItems: PortfolioItem[] = [
     {
       id: "port-smm-1",
       title: "Luxury Brand Social Media Campaign",
@@ -38,7 +45,34 @@ export const Portfolio: React.FC = () => {
     }
   ];
 
-  const categories = ["All", "Graphics", "Social Media", "Print"];
+  useEffect(() => {
+    const fetchPortfolio = async () => {
+      const path = "Portfolio";
+      try {
+        const querySnapshot = await getDocs(collection(db, path));
+        const fetched = querySnapshot.docs.map(doc => {
+          const data = doc.data();
+          return {
+            id: doc.id,
+            title: data.title,
+            category: data.category as any,
+            image: data.imageUrl,
+            description: data.description || "Custom high-conversion corporate artwork designed dynamically by AB Graphics."
+          } as PortfolioItem;
+        });
+        setDynamicItems(fetched);
+      } catch (err) {
+        handleFirestoreError(err, OperationType.GET, path);
+      }
+    };
+
+    fetchPortfolio();
+  }, [itemsChangeTrigger]);
+
+  // Combine dynamic uploads on top, then fall back to high-fidelity static presets
+  const portfolioItems = [...dynamicItems, ...staticItems];
+
+  const categories = ["All", "Graphics", "Social Media", "Video", "Print"];
 
   const filteredItems = selectedCategory === "All"
     ? portfolioItems

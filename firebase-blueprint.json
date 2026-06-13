@@ -1,0 +1,82 @@
+{
+  "entities": {
+    "Settings": {
+      "title": "Settings",
+      "description": "Website-wide dynamic configuration values",
+      "type": "object",
+      "properties": {
+        "logoUrl": {
+          "type": "string",
+          "description": "Custom agency logo image URL"
+        },
+        "heroTitle": {
+          "type": "string",
+          "description": "Custom tagline or title displayed in the Hero section"
+        },
+        "contactNumber": {
+          "type": "string",
+          "description": "Primary support call number"
+        },
+        "whatsappNumber": {
+          "type": "string",
+          "description": "Target direct WhatsApp support line"
+        }
+      },
+      "required": ["logoUrl", "heroTitle", "contactNumber", "whatsappNumber"]
+    },
+    "PortfolioItem": {
+      "title": "PortfolioItem",
+      "description": "An agency craft or portfolio item presentation",
+      "type": "object",
+      "properties": {
+        "title": {
+          "type": "string",
+          "description": "Title of the work"
+        },
+        "category": {
+          "type": "string",
+          "description": "Service categories like Brand Identity, Social Media Post, Video Editing"
+        },
+        "imageUrl": {
+          "type": "string",
+          "description": "URL of the uploaded asset"
+        }
+      },
+      "required": ["title", "category", "imageUrl"]
+    },
+    "Reel": {
+      "title": "Reel",
+      "description": "An interactive Instagram video reel presentation",
+      "type": "object",
+      "properties": {
+        "reelTitle": {
+          "type": "string",
+          "description": "Title of the video reel"
+        },
+        "instagramReelUrl": {
+          "type": "string",
+          "description": "Standard Instagram Reel embed or watch link"
+        },
+        "thumbnailUrl": {
+          "type": "string",
+          "description": "Reel video cover poster thumbnail link"
+        }
+      },
+      "required": ["reelTitle", "instagramReelUrl", "thumbnailUrl"]
+    }
+  },
+  "firestore": {
+    "/settings/{settingId}": {
+      "schema": "Settings",
+      "description": "Website generic states and branding rules"
+    },
+    "/Portfolio/{portfolioId}": {
+      "schema": "PortfolioItem",
+      "description": "Custom uploaded portfolio artwork showcase"
+    },
+    "/Reels/{reelId}": {
+      "schema": "Reel",
+      "description": "Custom uploaded video reels"
+    }
+  }
+}

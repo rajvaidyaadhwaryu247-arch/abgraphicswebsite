@@ -1,12 +1,23 @@
 import React, { useState } from "react";
-import { Phone, MessageSquare, Menu, X, Flame } from "lucide-react";
+import { Phone, MessageSquare, Menu, X, Flame, ShieldAlert } from "lucide-react";
 
 interface NavbarProps {
+  logoSrc?: string;
+  contactNumber?: string;
   onQuoteClick: () => void;
   onChatClick: () => void;
+  onAdminClick: () => void;
+  isAdminLoggedIn?: boolean;
 }
 
-export const Navbar: React.FC<NavbarProps> = ({ onQuoteClick, onChatClick }) => {
+export const Navbar: React.FC<NavbarProps> = ({
+  logoSrc = "/assets/ab-graphics-logo.png",
+  contactNumber = "9307643461",
+  onQuoteClick,
+  onChatClick,
+  onAdminClick,
+  isAdminLoggedIn = false,
+}) => {
   const [isOpen, setIsOpen] = useState(false);
 
   const navLinks = [
@@ -23,8 +34,8 @@ export const Navbar: React.FC<NavbarProps> = ({ onQuoteClick, onChatClick }) => 
       {/* Top micro-bar displaying WhatsApp/Phone details */}
       <div className="bg-black/50 border-b border-white/10 py-1 px-4 text-center text-xs tracking-wide text-gray-400 font-mono hidden sm:block">
         Creative Design & SMM Studio • Active Support Number:{" "}
-        <a href="tel:9307643461" className="text-orange-400 hover:underline">
-          9307643461
+        <a href={`tel:${contactNumber}`} className="text-orange-400 hover:underline">
+          {contactNumber}
         </a>
       </div>
 
@@ -34,7 +45,7 @@ export const Navbar: React.FC<NavbarProps> = ({ onQuoteClick, onChatClick }) => 
           {/* Logo / Branding */}
           <a href="#home" className="flex items-center gap-2 group">
             <img
-              src="/assets/ab-graphics-logo.png"
+              src={logoSrc}
               alt="AB Graphics Logo"
               className="w-[50px] h-[50px] rounded-lg object-contain shadow-lg group-hover:scale-105 transition-transform duration-300 pointer-events-none border border-white/10"
               referrerPolicy="no-referrer"
@@ -64,13 +75,26 @@ export const Navbar: React.FC<NavbarProps> = ({ onQuoteClick, onChatClick }) => 
 
           {/* Action buttons */}
           <div className="hidden sm:flex items-center gap-3">
+            {/* Admin Access Indicator / Trigger */}
+            <button
+              onClick={onAdminClick}
+              className={`p-2 rounded-lg border transition-all flex items-center justify-center ${
+                isAdminLoggedIn
+                  ? "bg-orange-500/10 border-orange-500/30 text-orange-400 hover:bg-orange-500/20"
+                  : "bg-white/5 border-white/10 text-gray-400 hover:text-white hover:bg-white/10"
+              }`}
+              title={isAdminLoggedIn ? "Open Admin Admin Panel" : "Login as Admin"}
+            >
+              <ShieldAlert className="w-4 h-4" />
+            </button>
+
             <a
-              href="tel:9307643461"
+              href={`tel:${contactNumber}`}
               id="nav-call-btn"
               className="flex items-center gap-2 bg-white/5 hover:bg-white/10 border border-white/20 px-4 py-2 rounded-full transition-all"
             >
               <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span>
-              <span className="text-xs font-mono font-semibold text-white">9307643461</span>
+              <span className="text-xs font-mono font-semibold text-white">{contactNumber}</span>
             </a>
             <button
               id="nav-quote-btn"
@@ -83,6 +107,16 @@ export const Navbar: React.FC<NavbarProps> = ({ onQuoteClick, onChatClick }) => 
 
           {/* Mobile hamburger menu */}
           <div className="flex md:hidden items-center gap-2">
+            <button
+              onClick={onAdminClick}
+              className={`p-2 rounded-lg border transition-all ${
+                isAdminLoggedIn
+                  ? "bg-orange-500/10 border-orange-500/30 text-orange-400"
+                  : "bg-white/5 border-white/10 text-gray-400"
+              }`}
+            >
+              <ShieldAlert className="w-4 h-4" />
+            </button>
             <button
               onClick={onQuoteClick}
               className="px-3 py-1.5 text-[11px] font-display font-semibold rounded-lg bg-gradient-to-r from-blue-600 via-purple-600 to-orange-600 text-white shadow-md"
@@ -117,11 +151,11 @@ export const Navbar: React.FC<NavbarProps> = ({ onQuoteClick, onChatClick }) => 
 
           <div className="flex items-center gap-3 pt-2">
             <a
-              href="tel:9307643461"
+              href={`tel:${contactNumber}`}
               className="flex-1 flex items-center justify-center gap-1.5 py-2.5 rounded-xl text-center text-xs font-mono font-medium text-gray-300 bg-white/5 border border-white/10"
             >
               <Phone className="w-3.5 h-3.5 text-blue-400" />
-              Call 9307643461
+              Call {contactNumber}
             </a>
             <button
               onClick={() => {
@@ -134,8 +168,8 @@ export const Navbar: React.FC<NavbarProps> = ({ onQuoteClick, onChatClick }) => 
               AI Chat
             </button>
           </div>
-          <div className="text-center font-mono text-[9px] text-gray-500">
-            9307643461
+          <div className="text-center font-mono text-[9px] text-gray-400">
+            {contactNumber}
           </div>
         </div>
       )}
