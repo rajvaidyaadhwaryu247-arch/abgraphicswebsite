@@ -21,21 +21,15 @@ export const Hero: React.FC<HeroProps> = ({ onQuoteClick, onChatClick, logoSrc }
       <div className="absolute inset-0 bg-[linear-gradient(to_right,rgba(255,255,255,0.015)_1px,transparent_1px),linear-gradient(to_bottom,rgba(255,255,255,0.015)_1px,transparent_1px)] bg-[size:30px_30px] opacity-45 [mask-image:radial-gradient(ellipse_at_center,black_40%,transparent_80%)] pointer-events-none"></div>
 
       <div className="container mx-auto px-4 sm:px-6 relative z-10 flex flex-col items-center text-center">
-        {/* Dynamic Logo Presentation with rotating orbit gradient */}
-        <div className="relative mb-6 sm:mb-8 group">
-          <div className="absolute inset-[-4px] rounded-full bg-gradient-to-r from-blue-600 via-purple-600 to-orange-500 opacity-75 blur-md group-hover:opacity-100 transition-opacity duration-500"></div>
-          <div className="relative w-28 h-28 sm:w-32 sm:h-32 rounded-full overflow-hidden border-2 border-white/20 shadow-2xl bg-black flex items-center justify-center">
-            {logoSrc ? (
-              <img
-                src={logoSrc}
-                alt="AB Graphics Official Logo"
-                referrerPolicy="no-referrer"
-                className="w-full h-full object-cover group-hover:scale-108 transition-transform duration-500"
-              />
-            ) : (
-              <div className="text-white font-display font-black text-3xl">AB</div>
-            )}
-          </div>
+        {/* Dynamic Logo Presentation with clean containment responsive to image bounds */}
+        <div className="relative mb-6 sm:mb-8 group flex items-center justify-center">
+          <div className="absolute inset-[-4px] rounded-2xl bg-gradient-to-r from-blue-600/20 via-purple-600/20 to-orange-500/20 opacity-75 blur-md group-hover:opacity-100 transition-opacity duration-500"></div>
+          <img
+            src={logoSrc}
+            alt="AB Graphics Logo"
+            referrerPolicy="no-referrer"
+            className="relative w-[180px] h-[180px] object-contain group-hover:scale-105 transition-transform duration-500 pointer-events-none"
+          />
           {/* Subtle badge */}
           <div className="absolute -bottom-2 translate-x-1/2 right-[50%] bg-gradient-to-r from-orange-500 to-purple-600 text-white text-[9px] font-mono uppercase font-bold tracking-widest px-3 py-1 rounded-full shadow-md border border-white/20 whitespace-nowrap">
             PRO DESIGN STUDIO

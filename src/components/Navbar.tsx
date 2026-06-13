@@ -34,9 +34,9 @@ export const Navbar: React.FC<NavbarProps> = ({ onQuoteClick, onChatClick }) => 
           {/* Logo / Branding */}
           <a href="#home" className="flex items-center gap-2 group">
             <img
-              src="/src/assets/images/ab_graphics_logo_1781358933777.jpg"
+              src="/assets/ab-graphics-logo.png"
               alt="AB Graphics Logo"
-              className="w-10 h-10 rounded-lg object-cover shadow-lg group-hover:scale-105 transition-transform duration-300 pointer-events-none border border-white/10"
+              className="w-[50px] h-[50px] rounded-lg object-contain shadow-lg group-hover:scale-105 transition-transform duration-300 pointer-events-none border border-white/10"
               referrerPolicy="no-referrer"
             />
             <div className="flex flex-col">

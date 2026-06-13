@@ -92,7 +92,7 @@ export default function App() {
 
       {/* Hero Header */}
       <Hero
-        logoSrc="/src/assets/images/ab_graphics_logo_1781358933777.jpg"
+        logoSrc="/assets/ab-graphics-logo.png"
         onQuoteClick={() => scrollToSection("quote-estimator-section")}
         onChatClick={() => {
           displayToast("Launching automated AB assistant consultant balloon on the bottom-right corner!");
@@ -165,9 +165,9 @@ export default function App() {
             <div className="md:col-span-2">
               <div className="flex items-center gap-2 mb-4">
                 <img
-                  src="/src/assets/images/ab_graphics_logo_1781358933777.jpg"
+                  src="/assets/ab-graphics-logo.png"
                   alt="AB Graphics"
-                  className="w-8 h-8 rounded-lg object-cover shadow-lg border border-white/10 pointer-events-none"
+                  className="w-10 h-10 rounded-lg object-contain shadow-lg border border-white/10 pointer-events-none"
                   referrerPolicy="no-referrer"
                 />
                 <div className="flex flex-col">
