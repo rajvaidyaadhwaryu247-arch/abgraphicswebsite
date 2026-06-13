@@ -45,7 +45,7 @@ export const Hero: React.FC<HeroProps> = ({ onQuoteClick, onChatClick, logoSrc }
         {/* Agency Intro micro tagline */}
         <div id="hero-tagline-container" className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white/5 border border-white/10 text-xs text-gray-300 font-mono mb-6 backdrop-blur-md">
           <span className="flex h-2 w-2 rounded-full bg-orange-400 animate-pulse"></span>
-          <span>By Adhwaryu Rajvaidya • Premium Sleek Agency</span>
+          <span>Creative Design & SMM Studio • Premium Sleek Agency</span>
         </div>
 
         {/* Main Heading requested exactly */}
@@ -106,7 +106,7 @@ export const Hero: React.FC<HeroProps> = ({ onQuoteClick, onChatClick, logoSrc }
               <ShieldCheck className="w-4 h-4 text-blue-400" />
               9307643461
             </div>
-            <div className="text-[10px] sm:text-xs text-gray-500 tracking-wider uppercase font-mono mt-1">Direct Owner Support</div>
+            <div className="text-[10px] sm:text-xs text-gray-500 tracking-wider uppercase font-mono mt-1">Direct Support Line</div>
           </div>
         </div>
       </div>

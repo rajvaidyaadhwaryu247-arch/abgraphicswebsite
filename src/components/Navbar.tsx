@@ -33,15 +33,18 @@ export const Navbar: React.FC<NavbarProps> = ({ onQuoteClick, onChatClick }) => 
         <div className="flex items-center justify-between">
           {/* Logo / Branding */}
           <a href="#home" className="flex items-center gap-2 group">
-            <div className="w-10 h-10 rounded-lg bg-gradient-to-tr from-blue-600 via-purple-600 to-orange-500 flex items-center justify-center font-bold text-xl shadow-lg group-hover:scale-105 transition-transform duration-300">
-              <span className="text-white font-display font-extrabold text-sm tracking-tighter">AB</span>
-            </div>
+            <img
+              src="/src/assets/images/ab_graphics_logo_1781358933777.jpg"
+              alt="AB Graphics Logo"
+              className="w-10 h-10 rounded-lg object-cover shadow-lg group-hover:scale-105 transition-transform duration-300 pointer-events-none border border-white/10"
+              referrerPolicy="no-referrer"
+            />
             <div className="flex flex-col">
               <span className="text-white font-display font-bold text-base leading-none group-hover:text-[#ff924a] transition-all">
                 AB GRAPHICS
               </span>
               <span className="text-[9px] font-mono tracking-widest text-gray-400 uppercase">
-                Adhwaryu Rajvaidya
+                Creative Studio
               </span>
             </div>
           </a>
@@ -132,7 +135,7 @@ export const Navbar: React.FC<NavbarProps> = ({ onQuoteClick, onChatClick }) => 
             </button>
           </div>
           <div className="text-center font-mono text-[9px] text-gray-500">
-            Owner: Adhwaryu Rajvaidya • 9307643461
+            9307643461
           </div>
         </div>
       )}

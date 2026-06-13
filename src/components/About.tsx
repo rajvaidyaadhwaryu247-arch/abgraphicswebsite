@@ -6,7 +6,7 @@ export const About: React.FC = () => {
     "Converting complex ideas into visually stunning, premium-crafted posts and designs.",
     "Data-backed social media reels & poster templates promoting viral organic retention.",
     "Optimized Lead Generation & Meta Ad campaigns connecting businesses with target crowds.",
-    "Honest pricing, strict delivery timelines, and direct support with owner Adhwaryu."
+    "Honest pricing, strict delivery timelines, and direct support with our creative team."
   ];
 
   return (

@@ -13,6 +13,9 @@ export const Contact: React.FC<ContactProps> = ({ prefilledRequirement = "", onS
   const [requirement, setRequirement] = useState("");
   const [message, setMessage] = useState("");
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [success, setSuccess] = useState(false);
+  const [whatsappBackupUrl, setWhatsappBackupUrl] = useState<string | null>(null);
 
   // Sync prefilled parameters if selected elsewhere dynamically
   useEffect(() => {
@@ -25,39 +28,101 @@ export const Contact: React.FC<ContactProps> = ({ prefilledRequirement = "", onS
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!name || !mobile || !requirement) {
-      alert("Please provide Name, Mobile Number, and Requirement.");
+    setError(null);
+    setSuccess(false);
+    setWhatsappBackupUrl(null);
+
+    // Validate all required fields
+    if (!name.trim()) {
+      setError("Please enter your full name.");
+      return;
+    }
+    if (!mobile.trim()) {
+      setError("Please enter your mobile number.");
+      return;
+    }
+    if (!/^[0-9]{10}$/.test(mobile.trim())) {
+      setError("Please enter a valid 10-digit mobile number.");
+      return;
+    }
+    if (!requirement) {
+      setError("Please select a service or package.");
       return;
     }
 
     setLoading(true);
     try {
       const fullRequirement = `Service: ${requirement}. Message Details: ${message || "None specified"}`;
-      const res = await fetch("/api/inquiry", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          name,
-          mobile,
-          requirement: fullRequirement,
-          source: "contact_form",
-        }),
+
+      // 1. Submit to Netlify Forms via standard URLencoded POST
+      const formPayload = new URLSearchParams({
+        "form-name": "contact",
+        name,
+        mobile,
+        requirement,
+        message,
       });
 
-      const data = await res.json();
-      if (res.ok) {
-        onSuccess("Our team will contact you soon.");
+      const netlifyRes = await fetch("/", {
+        method: "POST",
+        headers: { "Content-Type": "application/x-www-form-urlencoded" },
+        body: formPayload.toString(),
+      });
+
+      // 2. Clear API/backend custom inquiry endpoint as a backup
+      let apiSuccess = false;
+      try {
+        const apiRes = await fetch("/api/inquiry", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            name,
+            mobile,
+            requirement: fullRequirement,
+            source: "contact_form",
+          }),
+        });
+        if (apiRes.ok) {
+          apiSuccess = true;
+        }
+      } catch (err) {
+        console.warn("REST API /api/inquiry write omitted or offline:", err);
+      }
+
+      // If Netlify form request or backup API request succeeds
+      if (netlifyRes.ok || apiSuccess) {
+        // Construct exact WhatsApp payload and redirect user
+        const formattedWhatsappText = `Hi, I would like to request a Creative Consultation on AB Graphics!
+
+*Name:* ${name}
+*Mobile:* ${mobile}
+*Service / Package:* ${requirement}
+*Description/Message:* ${message || "Not specified"}`;
+
+        const dynamicWhatsappUrl = `https://wa.me/919307643461?text=${encodeURIComponent(formattedWhatsappText)}`;
+        
+        setWhatsappBackupUrl(dynamicWhatsappUrl);
+        setSuccess(true);
+        onSuccess("Thank you! Your inquiry has been submitted successfully. We will contact you soon.");
+
+        // Open the WhatsApp chat directly
+        try {
+          window.open(dynamicWhatsappUrl, "_blank");
+        } catch (popErr) {
+          console.warn("Popup blocked automatically opening WhatsApp tab:", popErr);
+        }
+
+        // Reset form fields
         setName("");
         setMobile("");
         setRequirement("");
         setMessage("");
       } else {
-        alert(data.error || "Failed to register request.");
+        setError("Failed to submit inquiry. Please verify your fields or contact us on direct WhatsApp.");
       }
-    } catch (err) {
+    } catch (err: any) {
       console.error(err);
-      alert("Inquiry registered successfully! Our team will contact you soon.");
-      onSuccess("Our team will contact you soon.");
+      setError(err?.message || "Failed to transmit brief. Please try again or WhatsApp us directly.");
     } finally {
       setLoading(false);
     }
@@ -140,16 +205,57 @@ export const Contact: React.FC<ContactProps> = ({ prefilledRequirement = "", onS
             </div>
 
             <div className="text-[11px] font-mono text-gray-400 uppercase">
-              AB Graphics • Owner: Adhwaryu Rajvaidya
+              AB Graphics
             </div>
           </div>
 
           {/* Interactive Lead Intake Form */}
           <div className="lg:col-span-7">
-            <form onSubmit={handleSubmit} className="bg-white/5 rounded-3xl p-6 sm:p-8 border border-white/10 shadow-2xl flex flex-col gap-5">
+            <form
+              name="contact"
+              data-netlify="true"
+              data-netlify-honeypot="bot-field"
+              onSubmit={handleSubmit}
+              className="bg-white/5 rounded-3xl p-6 sm:p-8 border border-white/10 shadow-2xl flex flex-col gap-5"
+            >
+              {/* Netlify Form Hidden Inputs */}
+              <input type="hidden" name="form-name" value="contact" />
+              <input type="hidden" name="bot-field" />
+
               <h3 className="text-white font-display font-extrabold text-lg sm:text-xl tracking-tight mb-2">
                 Submit Your Design Brief
               </h3>
+
+              {error && (
+                <div id="contact-form-error" className="bg-red-500/10 border border-red-500/20 text-red-500 p-3.5 rounded-xl text-xs font-mono">
+                  {error}
+                </div>
+              )}
+
+              {success && (
+                <div id="contact-form-success" className="bg-green-500/10 border border-green-500/20 text-green-400 p-4 rounded-xl text-xs font-mono flex flex-col gap-2.5">
+                  <div className="flex items-start gap-2">
+                    <CheckCircle className="w-4 h-4 text-green-400 mt-0.5 flex-shrink-0" />
+                    <span>Thank you! Your inquiry has been submitted successfully. We will contact you soon.</span>
+                  </div>
+                  {whatsappBackupUrl && (
+                    <div className="mt-1 flex flex-col gap-1.5 border-t border-green-400/20 pt-2.5">
+                      <span className="text-[10px] text-gray-400 leading-normal">
+                        If WhatsApp didn't open automatically, click below to initiate your 1-on-1 direct consultation thread:
+                      </span>
+                      <a
+                        href={whatsappBackupUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-flex items-center gap-1.5 px-3 py-2 rounded-lg bg-green-500 hover:bg-green-400 text-black font-semibold text-[10px] tracking-wider uppercase w-fit transition-colors"
+                      >
+                        <MessageSquare className="w-3.5 h-3.5 fill-current" />
+                        Send WhatsApp Message
+                      </a>
+                    </div>
+                  )}
+                </div>
+              )}
 
               <div>
                 <label className="block text-[10px] font-mono tracking-wider uppercase text-gray-400 mb-1.5">

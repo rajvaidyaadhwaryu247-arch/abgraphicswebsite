@@ -164,12 +164,15 @@ export default function App() {
             {/* Branding col */}
             <div className="md:col-span-2">
               <div className="flex items-center gap-2 mb-4">
-                <div className="w-8 h-8 rounded-lg bg-gradient-to-tr from-blue-500 via-purple-500 to-orange-500 flex items-center justify-center shadow-lg">
-                  <span className="text-white font-display font-extrabold text-sm">AB</span>
-                </div>
+                <img
+                  src="/src/assets/images/ab_graphics_logo_1781358933777.jpg"
+                  alt="AB Graphics"
+                  className="w-8 h-8 rounded-lg object-cover shadow-lg border border-white/10 pointer-events-none"
+                  referrerPolicy="no-referrer"
+                />
                 <div className="flex flex-col">
                   <span className="text-white font-display font-bold text-base leading-none">AB Graphics</span>
-                  <span className="text-[9px] font-mono tracking-widest text-[#a78bfa] uppercase">Adhwaryu Rajvaidya</span>
+                  <span className="text-[9px] font-mono tracking-widest text-[#a78bfa] uppercase">Creative Studio</span>
                 </div>
               </div>
               {/* Slogan exactly requested */}
